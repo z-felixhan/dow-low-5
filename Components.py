@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from operator import itemgetter
 from urllib.request import urlopen
 
 
@@ -68,5 +69,54 @@ def dividend(url, path, stocks):
         soup = BeautifulSoup(html, "lxml")
 
         result.append(soup.find(text="Trailing Annual Dividend Yield").parent.parent.nextSibling.text)
+
+    return result
+
+
+def merge(listOne, listTwo, listThree):
+    ''' (list, list, list) -> list
+
+    Merges three lists.
+
+    >>>merge(['PG'], ['118.71'], ['2.43%'])
+    [['PG', '118.71', '2.43%']]
+    >>>merge(['UNH', 'VZ', 'CVX'], ['231.22' '56.27' '116.56'], ['1.62%', '4.24%', '3.92%'])
+    [['UNH', '231.22', '1.62%'], ['VZ', '56.27', '4.24%'], ['CVX', '116.56', '3.92%']]
+    '''
+    
+    length = len(listOne)
+    result = []
+
+    for i in range(length):
+        result.insert(i, [listOne[i], float(listTwo[i]), listThree[i]])
+
+    return result
+
+
+def dl5(raw):
+    ''' (list) -> (list)
+
+    Returns the DOW Low 5 stocks.
+
+    >>>dl5([['BA', 356.01, '2.12%'], ['WMT', 110.83, '1.88%'], ['UNH', 230.66, '1.62%'], ['KO', 53.74, '2.90%'], ['VZ', 55.92, '4.24%'], ['HD', 217.47, '2.31%'], ['PG', 117.32, '2.43%'], ['MRK', 84.94, '2.38%'], ['TRV', 144.73, '2.12%'], ['PFE', 34.34, '3.99%'], ['CVX', 115.18, '3.92%'], ['MCD', 214.66, '2.05%'], ['JPM', 106.02, '2.94%'], ['JNJ', 127.73,
+'2.78%'], ['V', 175.23, '0.56%'], ['XOM', 67.49, '4.79%'], ['GS', 196.2, '1.61%'], ['MMM', 155.85, '3.48%'], ['MSFT', 133.39, '1.34%'], ['DOW', 40.71, '1.66%'], ['WBA', 49.32, '3.45%'], ['DIS', 131.67, '1.29%'], ['CAT', 114.06, '3.06%'], ['CSCO', 46.61, '2.82%'], ['NKE', 80.44, '1.03%'], ['IBM', 129.57, '4.71%'], ['UTX', 123.42, '2.27%'], ['AXP', 117.76, '1.28%'], ['INTC', 44.96, '2.63%'], ['AAPL', 202.64, '1.39%']])
+    [['XOM', 67.49, '4.79%'], ['VZ', 55.92, '4.24%'], ['PFE', 34.34, '3.99%'], ['WBA', 49.32, '3.45%'], ['KO', 53.74, '2.90%']]
+    >>>dl5([['XOM', 67.49, '4.79%'], ['VZ', 55.92, '4.24%'], ['PFE', 34.34, '3.99%'], ['WBA', 49.32, '3.45%'], ['KO', 53.74, '2.90%'], ['CSCO', 46.61, '2.82%'], ['INTC', 44.96, '2.63%'], ['MRK', 84.94, '2.38%'], ['DOW', 40.71, '1.66%'], ['NKE', 80.44, '1.03%']])
+    [['XOM', 67.49, '4.79%'], ['VZ', 55.92, '4.24%'], ['PFE', 34.34, '3.99%'], ['WBA', 49.32, '3.45%'], ['KO', 53.74, '2.90%']]
+    '''
+
+    #Sorts the list according to the current stock price from lowest to highest
+    result = sorted(raw, key = itemgetter(1))
+
+    #Leaves the top 10 lowest priced stocks
+    for i in range(10, len(raw)):
+        result.pop()
+
+    #Sorts the list according to dividend from highest to lowest
+    result = sorted(result, key = itemgetter(2), reverse = True)
+
+    #Leaves the top 5 highest dividend stocks
+    for i in range(4, 9):
+        result.pop()
 
     return result
