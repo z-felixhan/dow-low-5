@@ -1,5 +1,3 @@
 # Dow-Low-5
 
-Takes the Dow Low 5 on a daily basis.
-
-Has dependencies on URLIB.REQUEST and BeautifulSoup modules in Python 3.
+Gives a list of the DOW Low 5 stocks. Has dependencies on URLIB.REQUEST and BeautifulSoup modules in Python 3.
