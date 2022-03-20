@@ -5,6 +5,46 @@ import re
 import urllib.request
 
 
+def dl5MW(url, stocks):
+    ''' (url, list) -> list
+
+    Return the DOW Low 5 using Market Watch.
+
+    >>>dl5MW("https://www.marketwatch.com/investing/stock/", ['MMM', 'AXP', 'BA', 'CAT', 'CVX', 'KO', 'DIS', 'DOW', 'GS', 'HD', 'IBM', 'JNJ', 'JPM', 'MCD', 'MRK', 'NKE', 'PG', 'CRM', 'TRV', 'UNH', 'VZ', 'V', 'WMT'])
+    [['IBM', '128.62', '5.09%'], ['MMM', '148.74', '4.02%'], ['CVX', '161.00', '3.51%'], ['JPM', '140.10', '2.86%'], ['JNJ', '175.00', '2.43%']]
+    '''
+
+    raw = []
+
+    # Merge each stock in a list with its current price and dividend
+    for item in stocks:
+        html = urllib.request.urlopen(url + item)
+        soup = BeautifulSoup(html, "lxml")
+
+        raw.append([item,
+                    soup.find("bg-quote", attrs={"class": "value"}).text,
+                    (soup.find("small", text="Yield")).find_next_sibling("span").text])
+
+    # Sort the list according to the current stock price from lowest to highest
+    result = sorted(raw, key=itemgetter(1))
+
+    # Leave the top 10 lowest priced stocks
+    for i in range(10, len(raw)):
+        result.pop()
+
+    # Sort the list according to dividend from highest to lowest
+    result = sorted(result, key=itemgetter(2), reverse=True)
+
+    # Leave the top 5 highest dividend stocks
+    for i in range(4, 9):
+        result.pop()
+
+    print(
+        "The below is the DOW Low 5 in the format of [STOCK, CURRENT PRICE, DIVIDEND]:", *result, sep="\n")
+
+    return result
+
+
 def stocksWiki(url):
     ''' (string) -> list
 
