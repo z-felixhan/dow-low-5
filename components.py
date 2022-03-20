@@ -40,7 +40,7 @@ def dl5MW(url, stocks):
         result.pop()
 
     print(
-        "The below is the DOW Low 5 in the format of [STOCK, CURRENT PRICE, DIVIDEND]:", *result, sep="\n")
+        "The below is the DOW Low 5 in the format of [STOCK, CURRENT PRICE, YIELD]:", *result, sep="\n")
 
     return result
 
