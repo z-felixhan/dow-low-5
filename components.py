@@ -1,7 +1,36 @@
 from bs4 import BeautifulSoup
 from operator import itemgetter
 
+import re
 import urllib.request
+
+
+def stocksWiki(url):
+    ''' (string) -> list
+
+    Take the Wikipedia URL to components of an index and grab the individual stock names.
+
+    >>>stocks("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies")
+    ['MMM', 'AXP', 'BA', 'CAT', 'CVX', 'KO', 'DIS', 'DOW', 'GS', 'HD', 'IBM', 'JNJ', 'JPM', 'MCD', 'MRK', 'NKE', 'PG', 'CRM', 'TRV', 'UNH', 'VZ', 'V', 'WMT']
+    '''
+
+    tickers = []
+    html = urllib.request.urlopen(url)
+    soup = BeautifulSoup(html, "lxml")
+
+    # Find the table that contains the index components
+    table = soup.find("table", id="constituents")
+
+    # Get links that contain the ticker
+    links = table.find_all("a", href=re.compile(r"quote"))
+
+    # Place ticker into a list
+    for a in links:
+        tickers.append(a.text)
+
+    print("The components are:\n", tickers)
+
+    return tickers
 
 
 @DeprecationWarning
